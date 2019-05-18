@@ -1,2 +1,10 @@
 resources
 debug
+
+# cache
+__pycache__
+
+# ide
+.vscode
+.idea
+.history
