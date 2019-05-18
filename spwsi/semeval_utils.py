@@ -32,7 +32,7 @@ def generate_sem_eval_2013(dir_path: str):
                 yield before + [target] + after, len(before), inst_id
 
 
-def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, int]], key_path: str = None) \
+def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path: str = None) \
         -> Dict[str, Dict[str, float]]:
     """
     labeling example : {'become.v.3': {'become.sense.1':3,'become.sense.5':17} ... }
@@ -47,9 +47,9 @@ def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, int]], key_path: s
     def get_scores(gold_key, eval_key):
         ret = {}
         for metric, jar, column in [
-            #         ('jaccard-index','SemEval-2013-Task-13-test-data/scoring/jaccard-index.jar'),
-            #         ('pos-tau', 'SemEval-2013-Task-13-test-data/scoring/positional-tau.jar'),
-            #         ('WNDC', 'SemEval-2013-Task-13-test-data/scoring/weighted-ndcg.jar'),
+            ('jaccard-index', os.path.join(dir_path, 'scoring/jaccard-index.jar'), 1),
+            ('pos-tau', os.path.join(dir_path, 'scoring/positional-tau.jar'), 1),
+            ('WNDC', os.path.join(dir_path, 'scoring/weighted-ndcg.jar'), 1),
             ('FNMI', os.path.join(dir_path, 'scoring/fuzzy-nmi.jar'), 1),
             ('FBC', os.path.join(dir_path, 'scoring/fuzzy-bcubed.jar'), 3),
         ]:
