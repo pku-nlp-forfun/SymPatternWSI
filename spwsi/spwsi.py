@@ -1,5 +1,6 @@
 from .bilm_elmo import Bilm
-from spwsi.semeval_utils import generate_sem_eval_2013, evaluate_labeling
+from spwsi.semeval_utils import generate_sem_eval_2013
+from evaluation import handleScore
 from collections import defaultdict
 from .wsi_clustering import cluster_inst_ids_representatives
 from tqdm import tqdm
@@ -60,13 +61,7 @@ class SPWSI:
         out_key_path = None
         if debug_dir:
             out_key_path = os.path.join(debug_dir, run_name + '.key')
-        scores = evaluate_labeling('./resources/SemEval-2013-Task-13-test-data', inst_id_to_sense, out_key_path)
+        scores = handleScore(inst_id_to_sense, run_name, out_key_path)
         if print_progress:
             print('written SemEval key file to %s' % out_key_path)
-        fnmi = scores['all']['FNMI']
-        fbc = scores['all']['FBC']
-        msg = 'results FNMI %.2f FBC %.2f AVG %.2f' % (fnmi * 100, fbc * 100, np.sqrt(fnmi * fbc) * 100)
-        logging.info(msg)
-        if print_progress:
-            print(msg)
         return scores
