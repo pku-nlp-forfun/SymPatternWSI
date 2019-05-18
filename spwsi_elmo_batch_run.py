@@ -124,6 +124,7 @@ def worker_do(idx_conf):
     params = DEFAULT_PARAMS.copy()
     params.update(worker_conf)
     logging.info('running with config %s' % params)
+    print('running with config %s' % params)
     res = spwsi_runner.run(n_clusters=params['n_clusters'],
                            n_represent=params['n_represent'],
                            n_samples_side=params['n_samples_side'],
@@ -171,14 +172,14 @@ if __name__ == '__main__':
         gpus = [int(x) for x in sys.argv[2].split(',')]
         print('gpus set in command line arguments: %s' % gpus)
 
-    lemmatizer = multiprocessing.Process(target=create_lemmatized_if_needed)
-    lemmatizer.start()
-    lemmatizer.join()
+    # lemmatizer = multiprocessing.Process(target=create_lemmatized_if_needed)
+    # lemmatizer.start()
+    # lemmatizer.join()
 
     cuda_device_dispatcher = multiprocessing.Queue()
-    for i, gpu in enumerate(gpus):
-        cuda_device_dispatcher.put((i, gpu))
-    pool = multiprocessing.Pool(len(gpus), initializer=worker_init)
+    # for i, gpu in enumerate(gpus):
+    #     cuda_device_dispatcher.put((i, gpu))
+    pool = multiprocessing.Pool(1, initializer=worker_init)
 
     out_csv_path = os.path.join(debug_dir, run_name + '.data.csv')
     print('starting batch run. results will be written to %s. this might take a while...' % out_csv_path)
@@ -189,7 +190,8 @@ if __name__ == '__main__':
                               'disable_symmetric_patterns', 'disable_tfidf', 'prediction_cutoff']
         writer.writerow(
             ['run_name', 'target', 'FBC', 'FNMI', 'AVG', 'lm_batch_size', 'cutoff_lm_vocab'] + conf_params_report)
-        for run_name_done, conf, scores in tqdm(pool.imap_unordered(worker_do, enumerate(target_function()))):
+        for run_name_done, conf, scores in pool.imap_unordered(worker_do, enumerate(target_function())):
+            print(len(scores.keys()))
             for target, target_scores in scores.items():
                 writer.writerow([run_name_done, target,
                                  target_scores['FBC'],

@@ -1,4 +1,4 @@
-from .bilm_interface import Bilm
+from .bilm_elmo import Bilm
 from spwsi.semeval_utils import generate_sem_eval_2013, evaluate_labeling
 from collections import defaultdict
 from .wsi_clustering import cluster_inst_ids_representatives
@@ -11,7 +11,7 @@ DEFAULT_PARAMS = dict(
     n_clusters=7,
     n_represent=20,
     n_samples_side=4,
-    cuda_device=0,
+    cuda_device=-1,
     debug_dir='debug',
     disable_lemmatization=False,
     disable_symmetric_patterns=False,

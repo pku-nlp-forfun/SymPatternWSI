@@ -30,7 +30,6 @@ def cluster_inst_ids_representatives(inst_ids_to_representatives: Dict[str, List
     clustering.fit(transformed)
     senses = {}
     for i, inst_id in enumerate(inst_ids_ordered):
-        inst_id_clusters = Counter(clustering.labels_[i * n_represent:
-                                                      (i + 1) * n_represent])
+        inst_id_clusters = Counter(clustering.labels_[i * n_represent: (i + 1) * n_represent])
         senses[inst_id] = dict([('%s.sense.%d' % (lemma, k), v) for (k, v) in inst_id_clusters.most_common()])
     return senses

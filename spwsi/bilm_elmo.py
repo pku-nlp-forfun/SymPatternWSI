@@ -19,7 +19,7 @@ class BilmElmo(Bilm):
             ' batch_size: %d' % (
                 cuda_device, weights_path, vocab_path,
                 batch_size))
-        self.elmo = ElmoEmbedder(cuda_device=cuda_device)
+        self.elmo = ElmoEmbedder(cuda_device=-1)
 
         self.batch_size = batch_size
 
