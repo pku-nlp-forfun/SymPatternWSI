@@ -32,7 +32,7 @@ def generate_sem_eval_2013(dir_path: str):
                 yield before + [target] + after, len(before), inst_id
 
 
-def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path: str = None) \
+def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path: str = '111.key') \
         -> Dict[str, Dict[str, float]]:
     """
     labeling example : {'become.v.3': {'become.sense.1':3,'become.sense.5':17} ... }
@@ -54,7 +54,10 @@ def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path:
             ('FBC', os.path.join(dir_path, 'scoring/fuzzy-bcubed.jar'), 3),
         ]:
             logging.info('calculating metric %s' % metric)
-            res = subprocess.Popen(['java', '-jar', jar, gold_key, eval_key], stdout=subprocess.PIPE).stdout.readlines()
+            try:
+                res = subprocess.Popen(['java', '-jar', jar, gold_key, eval_key], stdout=subprocess.PIPE).stdout.readlines()
+            except:
+                return {}
             # columns = []
             for line in res:
                 line = line.decode().strip()
@@ -82,11 +85,10 @@ def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path:
             lines.append('%s %s %s' % (lemma_pos, instance_id, clusters_str))
         fout.write('\n'.join(lines))
         fout.flush()
-        
-        scores = get_scores(os.path.join(dir_path, 'keys/gold/all.key'),
-                            fout.name)
-        if key_path:
-            logging.info('writing key to file %s' % key_path)
-            with open(key_path, 'w', encoding="utf-8") as fout2:
-                fout2.write('\n'.join(lines))
+        try:
+            scores = get_scores(os.path.join(dir_path, 'keys/gold/all.key'), fout.name)
+        except:
+            pass
+        with open(key_path, 'w', encoding="utf-8") as fout2:
+            fout2.write('\n'.join(lines))
         return scores
