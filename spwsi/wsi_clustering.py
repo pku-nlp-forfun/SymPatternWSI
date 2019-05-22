@@ -1,13 +1,17 @@
+import logging
+from collections import Counter
+from enum import Enum
 from typing import Dict, List
+
+import numpy as np
+from sklearn.cluster import AgglomerativeClustering
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.cluster import AgglomerativeClustering
 from sklearn.pipeline import make_pipeline
-from collections import Counter
-import logging
-from pytorch_pretrained_bert import BertModel, BertTokenizer
+
 import torch
-import numpy as np
+from pytorch_pretrained_bert import BertModel, BertTokenizer
+
 
 def load_embedding(data_path:str) -> Dict[str, List[float]]:
     ''' load embedding '''
@@ -16,21 +20,35 @@ def load_embedding(data_path:str) -> Dict[str, List[float]]:
     embed = {ii.split(' ')[0]: np.array(ii.split(' ')[1:]).astype(float) for ii in origin_embed}
     return embed
 
+class EMBED_TYPE(Enum):
+    FastText = 0
+    Glove = 1
+    BERT = 2
+    ONE_HOT = 3
+    TF_IDF = 4
+
+embedType = EMBED_TYPE.FastText
+
+if embedType == EMBED_TYPE.BERT:
+    bert_dir = '../bert'
+    bert = BertModel.from_pretrained(bert_dir)
+    tokenizer = BertTokenizer.from_pretrained(f'{bert_dir}/uncased_L-24_H-1024_A-16/vocab.txt')
+elif embedType <= EMBED_TYPE.Glove:
+    if embedType == EMBED_TYPE.FastText:
+        embed_path = '../wiki-news-300d-1M-subword.vec'
+    else:
+        embed_path = '../glove.840B.300d.txt' 
+    embed = load_embedding(embed_path)
+
 def get_embed(word:str)->List[float]:
-    if word in gloved_embed:
-        return gloved_embed[word]
+    if word in embed:
+        return embed[word]
     else:
         return np.zeros(300)
 
-bert_dir = '../bert'
-bert = BertModel.from_pretrained(bert_dir)
-tokenizer = BertTokenizer.from_pretrained(f'{bert_dir}/uncased_L-24_H-1024_A-16/vocab.txt')
-gloved_path = '../wiki-news-300d-1M-subword.vec'
-gloved_embed = load_embedding(gloved_path)
-
 
 def cluster_inst_ids_representatives(inst_ids_to_representatives: Dict[str, List[Dict[str, int]]],
-                                     n_clusters: int, disable_tfidf: bool, embedType:int=0) -> Dict[str, Dict[str, int]]:
+                                     n_clusters: int, disable_tfidf: bool) -> Dict[str, Dict[str, int]]:
     """
     preforms agglomerative clustering on representatives of one SemEval target
     :param inst_ids_to_representatives: map from SemEval instance id to list of representatives
@@ -44,16 +62,16 @@ def cluster_inst_ids_representatives(inst_ids_to_representatives: Dict[str, List
     representatives = [y for x in inst_ids_ordered for y in inst_ids_to_representatives[x]]
     n_represent = len(representatives) // len(inst_ids_ordered)
     to_pipeline = [DictVectorizer()]
-    if embedType == 1:
+    if embedType == EMBED_TYPE.BERT:
         waitSentence = [' '.join(ii) for ii in representatives]
         transformed = []
         for ii in waitSentence:
             ids = torch.tensor([tokenizer.convert_tokens_to_ids(tokenizer.tokenize(ii))])
             transformed.append(bert(ids, output_all_encoded_layers=False)[-1][0].detach().numpy())
-    elif embedType == 2:
+    elif embedType <= EMBED_TYPE.Glove:
         transformed = [sum([get_embed(jj) for jj in ii]) for ii in representatives]
     else:
-        if not disable_tfidf:
+        if embedType == EMBED_TYPE.TF_IDF:
             to_pipeline.append(TfidfTransformer())
         data_transformer = make_pipeline(*to_pipeline)
         transformed = data_transformer.fit_transform(representatives).todense()
