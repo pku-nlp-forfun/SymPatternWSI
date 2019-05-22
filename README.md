@@ -1,3 +1,38 @@
+## our work
+
+change `BiLM` from ELMo -> FastText, Glove;
+
+change `cluster preprocessing` from tf-idf -> FastText, Glove, Bert;
+
+in 2019.5.22
+
+![image](https://cdn.nlark.com/yuque/0/2019/png/104214/1558514548845-9d7de316-e4d4-4cec-a7df-1118e4650967.png)
+
+## Result
+
+| LM   | cluster  | Jac.  | POS   | WDCG    | F-NMI   | F_BC  | AVG     |
+| ---- | -------- | ----- | ----- | ------- | ------- | ----- | ------- |
+| ELMo | one-hot  | 19.58 | 61.45 | 33.25   | 9.28    | 58.70 | 23.34   |
+| ELMo | tf-idf   | 20.20 | 62.40 | `34.06` | `11.06` | 57.72 | `25.27` |
+| ELMo | Bert     | 19.20 | 60.23 | 30.69   | 2.65    | 54.34 | 12.00   |
+| ELMo | Glove    | 21.22 | 63.18 | 32.00   | 8.28    | 60.90 | 22.45   |
+| ELMo | FastText | 20.14 | 62.14 | 31.47   | 7.40    | 61.39 | 21.32   |
+
+| LM    | cluster  | Jac.  | POS     | WDCG  | F-NMI | F_BC  | AVG   |
+| ----- | -------- | ----- | ------- | ----- | ----- | ----- | ----- |
+| Glove | one-hot  | 19.59 | 61.66   | 32.63 | 8.66  | 59.21 | 22.64 |
+| Glove | tf-idf   | 19.94 | 62.50   | 33.65 | 10.69 | 57.68 | 24.83 |
+| Glove | Glove    | 21.31 | `63.87` | 31.83 | 8.08  | 60.88 | 22.18 |
+| Glove | FastText | 19.81 | 61.78   | 30.92 | 6.49  | 61.08 | 19.91 |
+
+| LM       | cluster  | Jac.    | POS   | WDCG  | F-NMI | F_BC    | AVG   |
+| -------- | -------- | ------- | ----- | ----- | ----- | ------- | ----- |
+| FastText | one-hot  | 19.66   | 61.79 | 32.97 | 8.78  | 58.59   | 22.68 |
+| FastText | tf-idf   | 20.08   | 62.90 | 33.80 | 10.82 | 57.34   | 24.90 |
+| FastText | Glove    | `21.80` | 63.49 | 31.77 | 7.79  | 60.52   | 21.72 |
+| FastText | FastText | 20.73   | 62.15 | 31.37 | 7.08  | `61.11` | 20.80 |
+
+
 ### Word Sense Induction with Neural biLM and Symmetric Patterns
 
 This repository contains reproducing code for the results in the paper:
