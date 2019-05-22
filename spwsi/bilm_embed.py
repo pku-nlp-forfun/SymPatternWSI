@@ -2,17 +2,12 @@
 # @Author: gunjianpan
 # @Date:   2019-05-22 13:25:52
 # @Last Modified by:   gunjianpan
-# @Last Modified time: 2019-05-22 13:38:32
-
-# -*- coding: utf-8 -*-
-# @Author: gunjianpan
-# @Date:   2019-05-21 15:10:56
-# @Last Modified by:   gunjianpan
-# @Last Modified time: 2019-05-22 13:38:32
+# @Last Modified time: 2019-05-22 16:38:12
 
 import logging
 import multiprocessing
 import os.path
+from enum import Enum
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -20,9 +15,10 @@ from tqdm import tqdm
 
 import torch
 from pytorch_pretrained_bert import BertModel, BertTokenizer
-from .wsi_clustering import load_embedding
 
 from .bilm_interface import Bilm
+from .wsi_clustering import load_embedding
+
 
 class EMBED_TYPE(Enum):
     FastText = 0
