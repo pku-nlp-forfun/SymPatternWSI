@@ -9,12 +9,6 @@ from pytorch_pretrained_bert import BertModel, BertTokenizer
 import torch
 import numpy as np
 
-bert_dir = '/Users/gunjianpan/Desktop/git/bert'
-bert = BertModel.from_pretrained(bert_dir)
-tokenizer = BertTokenizer.from_pretrained(f'{bert_dir}/uncased_L-12_H-768_A-12/vocab.txt')
-gloved_path = '../glove.840B.300d.txt'
-gloved_embed = load_embedding(gloved_path)
-
 def load_embedding(data_path:str) -> Dict[str, List[float]]:
     ''' load embedding '''
     with open(data_path) as f:
@@ -28,9 +22,15 @@ def get_embed(word:str)->List[float]:
     else:
         return np.zeros(300)
 
+bert_dir = '../bert'
+bert = BertModel.from_pretrained(bert_dir)
+tokenizer = BertTokenizer.from_pretrained(f'{bert_dir}/uncased_L-24_H-1024_A-16/vocab.txt')
+gloved_path = '../wiki-news-300d-1M-subword.vec'
+gloved_embed = load_embedding(gloved_path)
+
 
 def cluster_inst_ids_representatives(inst_ids_to_representatives: Dict[str, List[Dict[str, int]]],
-                                     n_clusters: int, disable_tfidf: bool, embedType:int=2) -> Dict[str, Dict[str, int]]:
+                                     n_clusters: int, disable_tfidf: bool, embedType:int=0) -> Dict[str, Dict[str, int]]:
     """
     preforms agglomerative clustering on representatives of one SemEval target
     :param inst_ids_to_representatives: map from SemEval instance id to list of representatives
