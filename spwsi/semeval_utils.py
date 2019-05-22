@@ -9,7 +9,7 @@ import logging
 
 def generate_sem_eval_2013(dir_path: str):
     logging.info('reading SemEval dataset from %s' % dir_path)
-    nlp = spacy.load("en", disable=['ner', 'parser'])
+    nlp = spacy.load("en_core_web_sm", disable=['ner', 'parser'])
     in_xml_path = os.path.join(dir_path, 'contexts/senseval2-format/semeval-2013-task-13-test-data.senseval2.xml')
     gold_key_path = os.path.join(dir_path, 'keys/gold/all.key')
     with open(in_xml_path, encoding="utf-8") as fin_xml, open(gold_key_path, encoding="utf-8") as fin_key:
@@ -89,6 +89,6 @@ def evaluate_labeling(dir_path, labeling: Dict[str, Dict[str, float]], key_path:
             scores = get_scores(os.path.join(dir_path, 'keys/gold/all.key'), fout.name)
         except:
             pass
-        with open(key_path, 'w', encoding="utf-8") as fout2:
-            fout2.write('\n'.join(lines))
+        # with open(key_path, 'w', encoding="utf-8") as fout2:
+        #     fout2.write('\n'.join(lines))
         return scores
