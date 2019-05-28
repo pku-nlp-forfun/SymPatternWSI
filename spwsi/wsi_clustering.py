@@ -33,7 +33,7 @@ if embedType == EMBED_TYPE.BERT:
     bert_dir = '../bert'
     bert = BertModel.from_pretrained(bert_dir)
     tokenizer = BertTokenizer.from_pretrained(f'{bert_dir}/uncased_L-24_H-1024_A-16/vocab.txt')
-elif embedType <= EMBED_TYPE.Glove:
+elif embedType == EMBED_TYPE.Glove or embedType == EMBED_TYPE.FastText:
     if embedType == EMBED_TYPE.FastText:
         embed_path = '../wiki-news-300d-1M-subword.vec'
     else:
@@ -68,7 +68,7 @@ def cluster_inst_ids_representatives(inst_ids_to_representatives: Dict[str, List
         for ii in waitSentence:
             ids = torch.tensor([tokenizer.convert_tokens_to_ids(tokenizer.tokenize(ii))])
             transformed.append(bert(ids, output_all_encoded_layers=False)[-1][0].detach().numpy())
-    elif embedType <= EMBED_TYPE.Glove:
+    elif embedType == EMBED_TYPE.Glove or embedType == EMBED_TYPE.FastText:
         transformed = [sum([get_embed(jj) for jj in ii]) for ii in representatives]
     else:
         if embedType == EMBED_TYPE.TF_IDF:
